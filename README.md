@@ -54,18 +54,25 @@ Without credentials, the server connects anonymously to the production portal.
 
 All tools are prefixed `igvf_portal_`.
 
+### Primary Tools
+
 | Tool | Description |
 |---|---|
 | [`igvf_portal_search`](#igvf_portal_search) | Search the portal with free text and/or field filters |
 | [`igvf_portal_get_by_id`](#igvf_portal_get_by_id) | Retrieve a single item by `@id`, accession, or UUID |
-| [`igvf_portal_get_schema`](#igvf_portal_get_schema) | Return the JSON schema for an item type |
-| [`igvf_portal_list_item_types`](#igvf_portal_list_item_types) | List all valid item type names |
 | [`igvf_portal_get_collection`](#igvf_portal_get_collection) | List items from a collection endpoint |
-| [`igvf_portal_get_endpoint_params`](#igvf_portal_get_endpoint_params) | Discover available filter parameters for a collection |
 | [`igvf_portal_download`](#igvf_portal_download) | Download a single file to a local path |
-| [`igvf_portal_batch_download`](#igvf_portal_batch_download) | Get download URLs for files matching a query |
-| [`igvf_portal_facets`](#igvf_portal_facets) | Get aggregated facet counts for an item type |
 | [`igvf_portal_report`](#igvf_portal_report) | Generate a TSV report for an item type |
+| [`igvf_portal_batch_download`](#igvf_portal_batch_download) | Get download URLs for files matching a query |
+
+### Supporting Tools
+
+| Tool | Description |
+|---|---|
+| [`igvf_portal_get_schema`](#igvf_portal_get_schema) | Return the JSON schema for an item type |
+| [`igvf_portal_get_endpoint_params`](#igvf_portal_get_endpoint_params) | Discover available filter parameters for a collection |
+| [`igvf_portal_list_item_types`](#igvf_portal_list_item_types) | List all valid item type names |
+| [`igvf_portal_facets`](#igvf_portal_facets) | Get aggregated facet counts for an item type |
 
 ---
 
@@ -280,58 +287,39 @@ igvf_portal_report(
 
 ## Common Workflows
 
-### Faceted exploration
+### Search for genes by name
+
+Search for all genes related to EP300 across human and mouse:
 
 ```python
-# 1. See what's available
-igvf_portal_facets(type=["MeasurementSet"])
-
-# 2. Narrow by assay term
-igvf_portal_facets(
-    type=["MeasurementSet"],
-    field_filters={"assay_term.term_name": "ATAC-seq"}
-)
-
-# 3. Fetch results
 igvf_portal_search(
-    type=["MeasurementSet"],
-    field_filters={"assay_term.term_name": "ATAC-seq"}
+    query="ep300",
+    type=["Gene"]
 )
 ```
 
-### Download files from a measurement set
+Returns 11 results including the core EP300 gene, its antisense RNA, and EP300-interacting inhibitor of differentiation (EID) family members in both *Homo sapiens* and *Mus musculus*:
+
+| Symbol | Name | Taxa | Gene ID |
+|--------|------|------|---------|
+| EP300 | E1A binding protein p300 | *Homo sapiens* | ENSG00000100393 |
+| EP300-AS1 | EP300 antisense RNA 1 | *Homo sapiens* | ENSG00000231993 |
+| Ep300 | E1A binding protein p300 | *Mus musculus* | ENSMUSG00000055024 |
+| EID1 | EP300 interacting inhibitor of differentiation 1 | *Homo sapiens* | ENSG00000255302 |
+| EID2 | EP300 interacting inhibitor of differentiation 2 | *Homo sapiens* | ENSG00000176396 |
+| EID2B | EP300 interacting inhibitor of differentiation 2B | *Homo sapiens* | ENSG00000176401 |
+| EID3 | EP300 interacting inhibitor of differentiation 3 | *Homo sapiens* | ENSG00000255150 |
+| Eid1 | EP300 interacting inhibitor of differentiation 1 | *Mus musculus* | ENSMUSG00000091337 |
+| Eid2 | EP300 interacting inhibitor of differentiation 2 | *Mus musculus* | ENSMUSG00000046058 |
+| Eid2b | EP300 interacting inhibitor of differentiation 2B | *Mus musculus* | ENSMUSG00000070705 |
+| Eid3 | EP300 interacting inhibitor of differentiation 3 | *Mus musculus* | ENSMUSG00000109864 |
+
+To retrieve the full record for the human EP300 gene:
 
 ```python
-# List download URLs
-igvf_portal_batch_download(
-    type=["SequenceFile"],
-    field_filters={"file_set.@id": "/measurement-sets/IGVFDS1234ABCD/"}
-)
-
-# Download a specific file
-igvf_portal_download("IGVFFI1165AJSO", "/tmp/reads.fastq.gz")
-```
-
-### Generate a filtered TSV report
-
-```python
-# Discover filter params first
-igvf_portal_get_endpoint_params("sequence_files")
-
-# Generate report
-igvf_portal_report(
-    type=["SequenceFile"],
-    save_path="/tmp/fastq_files.tsv",
-    field_filters={"file_format": "fastq"}
-)
-```
-
-### Look up a specific item
-
-```python
-igvf_portal_get_by_id("IGVFFI1165AJSO")
-igvf_portal_get_by_id("/measurement-sets/IGVFDS1234ABCD/")
-igvf_portal_get_schema("MeasurementSet")
+igvf_portal_get_by_id("ENSG00000100393")
+# or
+igvf_portal_get_by_id("/genes/ENSG00000100393/")
 ```
 
 ---
