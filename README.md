@@ -58,8 +58,8 @@ All tools are prefixed `igvf_portal_`.
 
 | Tool | Description |
 |---|---|
-| [`igvf_portal_search`](#igvf_portal_search) | Search the portal with free text and/or field filters |
 | [`igvf_portal_get_by_id`](#igvf_portal_get_by_id) | Retrieve a single item by `@id`, accession, or UUID |
+| [`igvf_portal_search`](#igvf_portal_search) | Search the portal with free text and/or field filters |
 | [`igvf_portal_get_collection`](#igvf_portal_get_collection) | List items from a collection endpoint |
 | [`igvf_portal_download`](#igvf_portal_download) | Download a single file to a local path |
 | [`igvf_portal_report`](#igvf_portal_report) | Generate a TSV report for an item type |
@@ -289,37 +289,45 @@ igvf_portal_report(
 
 ### Search for genes by name
 
-Search for all genes related to EP300 across human and mouse:
+In Claude Code, ask in plain language — the agent calls the portal tools automatically:
 
-```python
-igvf_portal_search(
-    query="ep300",
-    type=["Gene"]
-)
 ```
+❯ Search IGVF portal for ep300 genes
 
-Returns 11 results including the core EP300 gene, its antisense RNA, and EP300-interacting inhibitor of differentiation (EID) family members in both *Homo sapiens* and *Mus musculus*:
+● igvf-portal-mcp - igvf_portal_search (MCP)(query: "ep300", type: ["Gene"])
+  ⎿  {"result":"{\n  \"total\": 11,\n  \"returned\": 11, ...
 
-| Symbol | Name | Taxa | Gene ID |
-|--------|------|------|---------|
-| EP300 | E1A binding protein p300 | *Homo sapiens* | ENSG00000100393 |
-| EP300-AS1 | EP300 antisense RNA 1 | *Homo sapiens* | ENSG00000231993 |
-| Ep300 | E1A binding protein p300 | *Mus musculus* | ENSMUSG00000055024 |
-| EID1 | EP300 interacting inhibitor of differentiation 1 | *Homo sapiens* | ENSG00000255302 |
-| EID2 | EP300 interacting inhibitor of differentiation 2 | *Homo sapiens* | ENSG00000176396 |
-| EID2B | EP300 interacting inhibitor of differentiation 2B | *Homo sapiens* | ENSG00000176401 |
-| EID3 | EP300 interacting inhibitor of differentiation 3 | *Homo sapiens* | ENSG00000255150 |
-| Eid1 | EP300 interacting inhibitor of differentiation 1 | *Mus musculus* | ENSMUSG00000091337 |
-| Eid2 | EP300 interacting inhibitor of differentiation 2 | *Mus musculus* | ENSMUSG00000046058 |
-| Eid2b | EP300 interacting inhibitor of differentiation 2B | *Mus musculus* | ENSMUSG00000070705 |
-| Eid3 | EP300 interacting inhibitor of differentiation 3 | *Mus musculus* | ENSMUSG00000109864 |
+● Found 11 genes related to EP300:
 
-To retrieve the full record for the human EP300 gene:
+  ┌───────────┬───────────────────────────────────────────────────┬──────────────┬────────────────────┬─────────────────────────────┐
+  │  Symbol   │                       Name                        │     Taxa     │      Gene ID       │          Location           │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ EP300     │ E1A binding protein p300                          │ Homo sapiens │ ENSG00000100393    │ chr22:41,092,591–41,180,077 │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ EP300-AS1 │ EP300 antisense RNA 1                             │ Homo sapiens │ ENSG00000231993    │ chr22:41,174,590–41,197,508 │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ Ep300     │ E1A binding protein p300                          │ Mus musculus │ ENSMUSG00000055024 │ chr15:81,469,551–81,536,278 │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ EID1      │ EP300 interacting inhibitor of differentiation 1  │ Homo sapiens │ ENSG00000255302    │ chr15                       │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ EID2      │ EP300 interacting inhibitor of differentiation 2  │ Homo sapiens │ ENSG00000176396    │ chr19                       │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ EID2B     │ EP300 interacting inhibitor of differentiation 2B │ Homo sapiens │ ENSG00000176401    │ chr19                       │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ EID3      │ EP300 interacting inhibitor of differentiation 3  │ Homo sapiens │ ENSG00000255150    │ chr12                       │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ Eid1      │ EP300 interacting inhibitor of differentiation 1  │ Mus musculus │ ENSMUSG00000091337 │ chr2                        │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ Eid2      │ EP300 interacting inhibitor of differentiation 2  │ Mus musculus │ ENSMUSG00000046058 │ chr7                        │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ Eid2b     │ EP300 interacting inhibitor of differentiation 2B │ Mus musculus │ ENSMUSG00000070705 │ chr7                        │
+  ├───────────┼───────────────────────────────────────────────────┼──────────────┼────────────────────┼─────────────────────────────┤
+  │ Eid3      │ EP300 interacting inhibitor of differentiation 3  │ Mus musculus │ ENSMUSG00000109864 │ chr10                       │
+  └───────────┴───────────────────────────────────────────────────┴──────────────┴────────────────────┴─────────────────────────────┘
 
-```python
-igvf_portal_get_by_id("ENSG00000100393")
-# or
-igvf_portal_get_by_id("/genes/ENSG00000100393/")
+  The core EP300 gene itself appears in both human (ENSG00000100393) and mouse
+  (ENSMUSG00000055024) versions, along with its antisense RNA and several
+  EP300-interacting inhibitor of differentiation (EID) family members.
 ```
 
 ---
