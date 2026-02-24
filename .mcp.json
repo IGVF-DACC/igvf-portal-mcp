@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "igvfd": {
-      "command": "python3",
-      "args": ["server.py"]
+    "igvf-portal-mcp": {
+      "command": "uv",
+      "args": ["run", "server.py"]
     }
   }
 }

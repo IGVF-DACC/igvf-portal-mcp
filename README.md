@@ -1,68 +1,40 @@
-# IGVF Portal MCP Server & Skill Reference
+# IGVF Portal MCP Server
 
-## Overview
+An MCP (Model Context Protocol) server that exposes the [IGVF Data Portal](https://data.igvf.org) API as tools for AI coding agents. Use it to search, filter, download files, and generate reports from the portal directly within an agent session.
 
-This directory contains an [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that exposes the [IGVF Data Portal](https://data.igvf.org) API as tools for AI assistants. It also includes a Claude skill for guided faceted search.
-
-```
-igvf-portal-mcp/
-├── .mcp.json                          ← MCP server registration for Claude Code
-├── .claude/skills/igvf-facet-filter/
-│   └── SKILL.md                       ← /igvf-facet-filter skill definition
-├── server.py                          ← MCP server (10 tools, igvf_portal_ prefix)
-├── README.md                          ← this file
-└── PLAN.md                            ← original design notes
-```
-
-The server wraps the [`igvf-client`](https://pypi.org/project/igvf-client/) Python SDK and exposes it over the stdio MCP transport so Claude (and other MCP-compatible clients) can query, browse, download, and report on IGVF data.
-
----
+The server is built on top of the [IGVF Python client](https://github.com/IGVF-DACC/igvf-python-client), which documents the full underlying API.
 
 ## Setup
 
-### Prerequisites
+### Requirements
 
 - Python ≥ 3.11
-- [`uv`](https://github.com/astral-sh/uv) (recommended) or `pip`
+- [`uv`](https://github.com/astral-sh/uv)
 
-### Install dependencies
+Dependencies are listed in `requirements.txt` and managed automatically by `uv`.
 
-```bash
-# With uv (reads inline script metadata automatically)
-uv run server.py
-
-# Or install manually
-pip install "igvf-client==110.0.0" "mcp[cli]==1.26.0"
-```
-
-### Run the server
+### Run
 
 ```bash
-# stdio transport (used by MCP clients like Claude Code)
-python3 server.py
-
-# Or with uv
 uv run server.py
 ```
 
----
+### Connect to an AI coding agent
 
-## Configuration
-
-### `.mcp.json` (Claude Code)
-
-The `.mcp.json` in this repo registers the server with Claude Code:
+Add the server to your agent's MCP configuration. For example, in Claude Code (`.mcp.json`):
 
 ```json
 {
   "mcpServers": {
     "igvfd": {
-      "command": "python3",
-      "args": ["server.py"]
+      "command": "uv",
+      "args": ["run", "server.py"]
     }
   }
 }
 ```
+
+A `.mcp.json` with this configuration is included in this repo.
 
 ### Environment variables
 
@@ -74,21 +46,33 @@ The `.mcp.json` in this repo registers the server with Claude Code:
 | `HTTPS_PROXY` / `HTTP_PROXY` | No | Proxy server URL |
 | `REQUESTS_CA_BUNDLE` / `SSL_CERT_FILE` | No | Custom CA certificate path |
 
-Without `IGVF_ACCESS_KEY` + `IGVF_SECRET_ACCESS_KEY`, the server connects anonymously to the production portal (`https://api.igvf.org`).
+Without credentials, the server connects anonymously to the production portal.
 
 ---
 
 ## Tool Reference
 
-All tools are prefixed `igvf_portal_`. Tools marked with dotted field names accept filters like `{"file_set.@id": "/analysis-sets/IGVFDS3909HJKS/"}`.
+All tools are prefixed `igvf_portal_`.
+
+| Tool | Description |
+|---|---|
+| [`igvf_portal_search`](#igvf_portal_search) | Search the portal with free text and/or field filters |
+| [`igvf_portal_get_by_id`](#igvf_portal_get_by_id) | Retrieve a single item by `@id`, accession, or UUID |
+| [`igvf_portal_get_schema`](#igvf_portal_get_schema) | Return the JSON schema for an item type |
+| [`igvf_portal_list_item_types`](#igvf_portal_list_item_types) | List all valid item type names |
+| [`igvf_portal_get_collection`](#igvf_portal_get_collection) | List items from a collection endpoint |
+| [`igvf_portal_get_endpoint_params`](#igvf_portal_get_endpoint_params) | Discover available filter parameters for a collection |
+| [`igvf_portal_download`](#igvf_portal_download) | Download a single file to a local path |
+| [`igvf_portal_batch_download`](#igvf_portal_batch_download) | Get download URLs for files matching a query |
+| [`igvf_portal_facets`](#igvf_portal_facets) | Get aggregated facet counts for an item type |
+| [`igvf_portal_report`](#igvf_portal_report) | Generate a TSV report for an item type |
 
 ---
 
 ### `igvf_portal_search`
 
-Search the IGVF Data Portal using free text and/or field filters.
+Search the portal using free text and/or field filters.
 
-**Signature**
 ```python
 igvf_portal_search(
     query: str = "",
@@ -99,8 +83,6 @@ igvf_portal_search(
 ) -> str  # JSON
 ```
 
-**Parameters**
-
 | Parameter | Type | Description |
 |---|---|---|
 | `query` | str | Free-text search string |
@@ -109,7 +91,8 @@ igvf_portal_search(
 | `sort` | list[str] | Sort fields; prefix `-` for descending |
 | `field_filters` | dict | Dotted field name → value filters |
 
-**Example**
+Use real dotted field names (e.g. `"file_set.@id"`), not underscore param names. See `igvf_portal_get_endpoint_params` for the distinction.
+
 ```python
 igvf_portal_search(
     type=["SequenceFile"],
@@ -125,12 +108,10 @@ igvf_portal_search(
 
 Retrieve a single item by its `@id`, accession, or UUID.
 
-**Signature**
 ```python
 igvf_portal_get_by_id(resource_id: str) -> str  # JSON
 ```
 
-**Example**
 ```python
 igvf_portal_get_by_id("IGVFFI1165AJSO")
 igvf_portal_get_by_id("/sequence-files/IGVFFI1165AJSO/")
@@ -142,17 +123,15 @@ igvf_portal_get_by_id("/sequence-files/IGVFFI1165AJSO/")
 
 Return the JSON schema for an item type, describing all its fields.
 
-**Signature**
 ```python
 igvf_portal_get_schema(item_type: str) -> str  # JSON schema
 ```
 
-**Example**
 ```python
 igvf_portal_get_schema("SequenceFile")
 ```
 
-Use `igvf_portal_list_item_types` to get valid `item_type` values.
+Use `igvf_portal_list_item_types` to get valid type names.
 
 ---
 
@@ -160,12 +139,10 @@ Use `igvf_portal_list_item_types` to get valid `item_type` values.
 
 Return a sorted list of all valid IGVF item type names (CamelCase).
 
-**Signature**
 ```python
 igvf_portal_list_item_types() -> str  # JSON array
 ```
 
-**Example**
 ```python
 igvf_portal_list_item_types()
 # → ["AccessKey", "AlignmentFile", "AnalysisSet", ...]
@@ -175,9 +152,8 @@ igvf_portal_list_item_types()
 
 ### `igvf_portal_get_collection`
 
-List items from a specific collection endpoint using Python-style underscore parameter names.
+List items from a specific collection endpoint using underscore-style parameter names.
 
-**Signature**
 ```python
 igvf_portal_get_collection(
     collection: str,
@@ -188,9 +164,8 @@ igvf_portal_get_collection(
 ) -> str  # JSON
 ```
 
-> **Note:** `field_filters` here uses underscore Python param names (e.g. `"file_set_id"`), not dotted field names. Use `igvf_portal_get_endpoint_params` to discover valid filter names.
+`field_filters` here uses underscore Python param names (e.g. `"file_set_id"`), not dotted field names. Use `igvf_portal_get_endpoint_params` to discover valid filter names.
 
-**Example**
 ```python
 igvf_portal_get_collection(
     "sequence_files",
@@ -203,19 +178,16 @@ igvf_portal_get_collection(
 
 ### `igvf_portal_get_endpoint_params`
 
-Discover available filter parameters for a collection, with both underscore param names (for `igvf_portal_get_collection`) and dotted field names (for `igvf_portal_search`/`igvf_portal_report`).
+Discover available filter parameters for a collection. Returns both underscore param names (for `igvf_portal_get_collection`) and dotted field names (for `igvf_portal_search` / `igvf_portal_report`).
 
-**Signature**
 ```python
 igvf_portal_get_endpoint_params(endpoint: str) -> str  # JSON
 ```
 
-**Example**
 ```python
 igvf_portal_get_endpoint_params("sequence_files")
 # → {
 #     "endpoint": "sequence_files",
-#     "standard_params": ["limit", "query", "sort"],
 #     "filter_params": [
 #       {"collection_param": "file_set_id", "search_field": "file_set.@id", "type": "str"},
 #       ...
@@ -231,12 +203,10 @@ igvf_portal_get_endpoint_params("?")  # list all available endpoints
 
 Download a single IGVF file to a local path.
 
-**Signature**
 ```python
 igvf_portal_download(file_id: str, save_path: str) -> str  # JSON
 ```
 
-**Example**
 ```python
 igvf_portal_download("IGVFFI8092FZKL", "/tmp/IGVFFI8092FZKL.tsv")
 # → {"saved_to": "/tmp/IGVFFI8092FZKL.tsv", "bytes": 204800}
@@ -248,7 +218,6 @@ igvf_portal_download("IGVFFI8092FZKL", "/tmp/IGVFFI8092FZKL.tsv")
 
 Get a newline-separated list of download URLs for files matching a query.
 
-**Signature**
 ```python
 igvf_portal_batch_download(
     type: list[str],
@@ -257,7 +226,6 @@ igvf_portal_batch_download(
 ) -> str  # newline-separated URLs
 ```
 
-**Example**
 ```python
 igvf_portal_batch_download(
     type=["SequenceFile"],
@@ -271,16 +239,14 @@ igvf_portal_batch_download(
 
 Get aggregated facet counts for an item type without fetching records. Useful for understanding data distribution before filtering.
 
-**Signature**
 ```python
 igvf_portal_facets(
     type: list[str],
     query: str = "",
     field_filters: dict | None = None,
-) -> str  # JSON with total + facets array
+) -> str  # JSON
 ```
 
-**Example**
 ```python
 igvf_portal_facets(type=["SequenceFile"])
 # → {"total": 45123, "facets": [{"field": "file_format", "title": "File Format", "terms": [...]}]}
@@ -292,17 +258,15 @@ igvf_portal_facets(type=["SequenceFile"])
 
 Generate a TSV-formatted report for an item type and save it locally.
 
-**Signature**
 ```python
 igvf_portal_report(
     type: list[str],
     save_path: str,
     query: str = "",
     field_filters: dict | None = None,
-) -> str  # JSON with save path and byte count
+) -> str  # JSON
 ```
 
-**Example**
 ```python
 igvf_portal_report(
     type=["SequenceFile"],
@@ -311,42 +275,6 @@ igvf_portal_report(
 )
 # → {"saved_to": "/tmp/sequence_files.tsv", "bytes": 512000}
 ```
-
----
-
-## Skill Reference: `igvf-facet-filter`
-
-### Purpose
-
-The `igvf-facet-filter` skill guides users through progressive faceted exploration of an IGVF item type — narrowing down a large collection step-by-step before fetching records.
-
-### How to invoke
-
-In Claude Code, type:
-
-```
-/igvf-facet-filter SequenceFile
-```
-
-Or without an argument to be prompted for the item type:
-
-```
-/igvf-facet-filter
-```
-
-### Workflow walkthrough
-
-1. **Initial summary** — Calls `igvf_portal_facets(type=["<ItemType>"])` and shows the total item count plus a menu of available facet names (skipping facets with 0 or 1 term).
-
-2. **Expand on demand** — User picks one or more facets to inspect. The skill shows term values and counts only for those facets.
-
-3. **Apply filters** — User picks a filter value. The skill calls `igvf_portal_facets` again with `field_filters` applied and shows the updated count and facet menu.
-
-4. **Repeat** — Steps 2–3 repeat until the user is satisfied with the filter set.
-
-5. **Fetch results** — The skill calls `igvf_portal_search` or `igvf_portal_get_collection` with the accumulated filters to retrieve actual records.
-
-The skill also offers to call `igvf_portal_get_endpoint_params` if the user wants to see filterable fields beyond what facets cover.
 
 ---
 
@@ -374,7 +302,7 @@ igvf_portal_search(
 ### Download files from a measurement set
 
 ```python
-# List files
+# List download URLs
 igvf_portal_batch_download(
     type=["SequenceFile"],
     field_filters={"file_set.@id": "/measurement-sets/IGVFDS1234ABCD/"}
@@ -401,12 +329,33 @@ igvf_portal_report(
 ### Look up a specific item
 
 ```python
-# By accession
 igvf_portal_get_by_id("IGVFFI1165AJSO")
-
-# By @id path
 igvf_portal_get_by_id("/measurement-sets/IGVFDS1234ABCD/")
-
-# Check its schema
 igvf_portal_get_schema("MeasurementSet")
 ```
+
+---
+
+## Agent Skill: `igvf-facet-filter`
+
+This repo includes an agent skill for guided faceted exploration. It is currently implemented as a Claude Code skill (`.claude/skills/igvf-facet-filter/SKILL.md`) but the workflow it describes can be adapted for any coding agent.
+
+### Purpose
+
+Guides the user through progressive filtering of an IGVF item type — starting from a high-level summary and narrowing down to a target set of records before fetching them.
+
+### Usage (Claude Code)
+
+```
+/igvf-facet-filter SequenceFile
+```
+
+Or without an argument to be prompted for the item type.
+
+### Workflow
+
+1. Calls `igvf_portal_facets` and shows the total item count plus a menu of available facet names — no values yet.
+2. User picks facets to expand. The skill shows term values and counts only for those.
+3. User picks a filter value. The skill re-queries with `field_filters` applied and shows the updated count and facet menu.
+4. Steps 2–3 repeat until the user is ready to fetch records.
+5. Fetches results with `igvf_portal_search` or `igvf_portal_get_collection`.
