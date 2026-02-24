@@ -1,6 +1,6 @@
 # IGVF Portal MCP Server
 
-An MCP (Model Context Protocol) server that exposes the [IGVF Data Portal](https://data.igvf.org) API as tools for AI coding agents. Use it to search, filter, download files, and generate reports from the portal directly within an agent session.
+An MCP server that exposes the [IGVF Data Portal](https://data.igvf.org) API as tools for AI coding agents. Use it to search, filter, download files, and generate reports from the portal directly within an agent session.
 
 The server is built on top of the [IGVF Python client](https://github.com/IGVF-DACC/igvf-python-client), which documents the full underlying API.
 
@@ -26,7 +26,7 @@ Add the server to your agent's MCP configuration. For example, in Claude Code (`
 ```json
 {
   "mcpServers": {
-    "igvfd": {
+    "igvf-portal": {
       "command": "uv",
       "args": ["run", "server.py"]
     }

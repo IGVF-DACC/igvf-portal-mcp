@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "igvf-portal-mcp": {
+    "igvf-portal": {
       "command": "uv",
       "args": ["run", "server.py"]
     }
