@@ -47,6 +47,49 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
   - AccessKey, Award, Document, Image, InstitutionalCertificate, Lab, Page, Publication, Source, Treatment, User
 ```
 
+### Compare item types using schemas
+
+```
+❯ What's the difference between measurement set and an analysis set?
+
+● igvf-portal-mcp - igvf_portal_get_schema (MCP)(item_type: "MeasurementSet")
+  ⎿  ⚠ Large MCP response (~15.3k tokens), this can fill up context quickly
+  ⎿  {"result":"{\n  \"title\": \"Measurement Set\",\n  \"$id\": \"/profiles/measurement_set.json\", ...
+     … +276 lines (ctrl+o to expand)
+
+● igvf-portal-mcp - igvf_portal_get_schema (MCP)(item_type: "AnalysisSet")
+  ⎿  {"result":"{\n  \"title\": \"Analysis Set\",\n  \"$id\": \"/profiles/analysis_set.json\", ...
+     … +142 lines (ctrl+o to expand)
+
+● Here's the key distinction, straight from the schema descriptions:
+
+  MeasurementSet: Hosts raw data files (e.g. FASTQs) resulting from sequencing of a library
+  prepared from the nucleic acids of the sample. The sample-specific raw sequencing results
+  are captured here.
+
+  AnalysisSet: Represents the results of a computational analysis of raw genomic data or
+  other analyses.
+
+  ┌──────────────────┬─────────────────────────────────────────────┬─────────────────────────────────────────────────┐
+  │                  │               MeasurementSet                │                   AnalysisSet                   │
+  ├──────────────────┼─────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Purpose          │ Raw experimental data                       │ Computational analysis results                  │
+  ├──────────────────┼─────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Typical files    │ FASTQs, raw reads                           │ BAMs, matrices, BEDs, TSVs                      │
+  ├──────────────────┼─────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Input            │ Biological samples                          │ Other file sets (MeasurementSets, etc.)         │
+  ├──────────────────┼─────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Required fields  │ assay_term, samples, preferred_assay_titles │ file_set_type                                   │
+  ├──────────────────┼─────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Types            │ (single type)                               │ intermediate analysis, principal analysis       │
+  ├──────────────────┼─────────────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Key relationship │ Feeds into AnalysisSets                     │ Has input_file_sets pointing to MeasurementSets │
+  └──────────────────┴─────────────────────────────────────────────┴─────────────────────────────────────────────────┘
+
+  A typical flow is: MeasurementSet (raw FASTQs) → AnalysisSet (intermediate)
+  (e.g. BAM + fragment file) → AnalysisSet (principal) (final matrices, quantifications).
+```
+
 ### Search for genes by name
 
 ```
