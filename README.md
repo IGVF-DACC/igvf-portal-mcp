@@ -4,11 +4,9 @@ An MCP server that exposes the [IGVF Data Portal](https://data.igvf.org) API as 
 
 The server is built on top of the [IGVF Python client](https://github.com/IGVF-DACC/igvf-python-client), which documents the full underlying API.
 
-## Example Use
+## Examples (using Claude Code)
 
 ### Search for genes by name
-
-In Claude Code, ask in plain language — the agent calls the portal tools automatically:
 
 ```
 ❯ Search IGVF portal for ep300 genes
@@ -47,6 +45,112 @@ In Claude Code, ask in plain language — the agent calls the portal tools autom
   The core EP300 gene itself appears in both human (ENSG00000100393) and mouse
   (ENSMUSG00000055024) versions, along with its antisense RNA and several
   EP300-interacting inhibitor of differentiation (EID) family members.
+```
+
+### Look up files in an analysis set
+
+```
+❯ What files are in /analysis-sets/IGVFDS9564JXGL/?
+
+● igvf-portal-mcp - igvf_portal_get_by_id (MCP)(resource_id: "/analysis-sets/IGVFDS9564JXGL/")
+  ⎿  {
+       "result": "{\n  \"doi\": \"10.65695/IGVFDS9564JXGL\",\n  \"input_file_sets\": [\n    \"/measurement-sets/IGVFDS2443ZQHK/\", ...
+     … +9 lines (ctrl+o to expand)
+
+● IGVFDS9564JXGL is an intermediate analysis set from the Ryan Corces lab (10x multiome —
+  snATAC-seq + snRNA-seq, genetically multiplexed). It contains 6 files:
+
+  ┌────────────────┬────────────────┐
+  │   Accession    │      Type      │
+  ├────────────────┼────────────────┤
+  │ IGVFFI3882BXBL │ Alignment file │
+  ├────────────────┼────────────────┤
+  │ IGVFFI6307SAFZ │ Index file     │
+  ├────────────────┼────────────────┤
+  │ IGVFFI9552YLAE │ Index file     │
+  ├────────────────┼────────────────┤
+  │ IGVFFI6617CCIB │ Matrix file    │
+  ├────────────────┼────────────────┤
+  │ IGVFFI8348ZDXP │ Matrix file    │
+  ├────────────────┼────────────────┤
+  │ IGVFFI0795NBVQ │ Tabular file   │
+  └────────────────┴────────────────┘
+
+  The analysis covers a multiplexed sample from 8 human donors across three brain
+  regions: posterior cingulate gyrus, putamen, and substantia nigra.
+```
+
+### Drill into individual files
+
+```
+❯ Give me details on the BED and BAM files.
+
+● igvf-portal-mcp - igvf_portal_get_by_id (MCP)(resource_id: "IGVFFI3882BXBL")
+  ⎿  {
+       "result": "{\n  \"controlled_access\": false,\n  \"release_timestamp\": \"2025-11-12T18:17:11.471572+00:00\", ...
+     … +11 lines (ctrl+o to expand)
+
+● igvf-portal-mcp - igvf_portal_get_by_id (MCP)(resource_id: "IGVFFI0795NBVQ")
+  ⎿  {
+       "result": "{\n  \"controlled_access\": false,\n  \"assembly\": \"GRCh38\",\n  \"file_format_type\": \"bed3+\", ...
+     … +11 lines (ctrl+o to expand)
+
+● BAM — IGVFFI3882BXBL
+  - Format: BAM (unfiltered alignments), assembly GRCh38
+  - Content: Raw aligned reads from Chromap (snATAC-seq)
+  - Size: 19.4 GB
+  - Reads: 454,907,788
+  - Derived from: 9 sequence files + 3 configuration files
+  - S3: s3://igvf-public/2025/10/21/ec04ba8e.../IGVFFI3882BXBL.bam
+
+  BED — IGVFFI0795NBVQ
+  - Format: BED (bed3+, gzipped), assembly GRCh38
+  - Content: Raw ATAC-seq fragment file from Chromap (unfiltered)
+  - Size: 2.18 GB
+  - Derived from: same 9 sequence files + 3 configuration files as the BAM
+  - S3: s3://igvf-public/2025/10/21/b7d07a7c.../IGVFFI0795NBVQ.bed.gz
+
+  Both were produced by the IGVF DACC processing pipeline using the same workflow
+  (IGVFWF6403DVII) and are unfiltered outputs. The BED is used as input to produce
+  the index file IGVFFI6307SAFZ, and the BAM feeds into index file IGVFFI9552YLAE.
+```
+
+### Explore the samples
+
+```
+❯ What samples were used?
+
+● igvf-portal-mcp - igvf_portal_get_by_id (MCP)(resource_id: "/multiplexed-samples/IGVFSM6670KYMT/")
+  ⎿  {
+       "result": "{\n  \"preview_timestamp\": \"2025-03-25T22:41:47.611954+00:00\",\n  \"release_timestamp\": \"2025-09-17T18:47:59.370110+00:00\", ...
+     … +9 lines (ctrl+o to expand)
+
+● The multiplexed sample consists of 8 tissue samples from 8 European donors, all postmortem
+  brain tissue sourced from Banner Health:
+
+  ┌────────────────┬───────────────────────────┬───────────┬─────┬──────────────────────────────────────────────────┐
+  │   Accession    │          Tissue           │ Donor sex │ Age │                     Disease                      │
+  ├────────────────┼───────────────────────────┼───────────┼─────┼──────────────────────────────────────────────────┤
+  │ IGVFSM8850QXUW │ Putamen                   │ Male      │ 85  │ Parkinson's disease                              │
+  ├────────────────┼───────────────────────────┼───────────┼─────┼──────────────────────────────────────────────────┤
+  │ IGVFSM9308VHFW │ Putamen                   │ Female    │ 82  │ Parkinson's disease                              │
+  ├────────────────┼───────────────────────────┼───────────┼─────┼──────────────────────────────────────────────────┤
+  │ IGVFSM9550JLTC │ Putamen                   │ Male      │ 78  │ Parkinson's disease                              │
+  ├────────────────┼───────────────────────────┼───────────┼─────┼──────────────────────────────────────────────────┤
+  │ IGVFSM9314PSQK │ Substantia nigra          │ Male      │ 74  │ Parkinson's disease, cerebral amyloid angiopathy │
+  ├────────────────┼───────────────────────────┼───────────┼─────┼──────────────────────────────────────────────────┤
+  │ IGVFSM3597NWGE │ Substantia nigra          │ Female    │ 70  │ Parkinson's disease                              │
+  ├────────────────┼───────────────────────────┼───────────┼─────┼──────────────────────────────────────────────────┤
+  │ IGVFSM0019LQKQ │ Substantia nigra          │ Male      │ 70  │ Parkinson's disease                              │
+  ├────────────────┼───────────────────────────┼───────────┼─────┼──────────────────────────────────────────────────┤
+  │ IGVFSM7450JGGC │ Substantia nigra          │ Male      │ 79  │ None listed                                      │
+  ├────────────────┼───────────────────────────┼───────────┼─────┼──────────────────────────────────────────────────┤
+  │ IGVFSM4995KUZR │ Posterior cingulate gyrus │ Male      │ 83  │ Parkinson's disease, cerebral amyloid angiopathy │
+  └────────────────┴───────────────────────────┴───────────┴─────┴──────────────────────────────────────────────────┘
+
+  7 of 8 donors have Parkinson's disease; 2 also have cerebral amyloid angiopathy. Ages
+  range from 70–85. The one donor without a listed disease (IGVFSM7450JGGC) likely
+  serves as a control.
 ```
 
 ---
