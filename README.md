@@ -50,7 +50,7 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
 ### Compare item types using schemas
 
 ```
-❯ What's the difference between measurement set and an analysis set?
+❯ What's the difference between measurement set and analysis set?
 
 ● igvf-portal-mcp - igvf_portal_get_schema (MCP)(item_type: "MeasurementSet")
   ⎿  ⚠ Large MCP response (~15.3k tokens), this can fill up context quickly
