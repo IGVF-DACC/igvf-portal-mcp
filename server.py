@@ -360,7 +360,7 @@ def igvf_portal_batch_download(
     Args:
         type: One or more FileSet item types, e.g. ["MeasurementSet"].
         save_path: Local filesystem path where the URLs will be written,
-                   e.g. "/tmp/urls.txt".
+                   e.g. "/tmp/urls.tsv".
         query: Optional free-text filter.
         field_filters: Dict of field→value filters using real dotted field names,
                        e.g. {"file_set.@id": "/analysis-sets/IGVFDS3909HJKS/"}.

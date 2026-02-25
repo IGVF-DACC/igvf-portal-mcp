@@ -4,6 +4,40 @@ An MCP server that exposes the [IGVF Data Portal](https://data.igvf.org) API as 
 
 The server is built on top of the [IGVF Python client](https://github.com/IGVF-DACC/igvf-python-client), which documents the full underlying API.
 
+## Table of Contents
+
+- [Examples (using Claude Code)](#examples-using-claude-code)
+  - [List all item types](#list-all-item-types)
+  - [Compare item types using schemas](#compare-item-types-using-schemas)
+  - [Search for genes by name](#search-for-genes-by-name)
+  - [Look up an assay term](#look-up-an-assay-term)
+  - [Get a facet breakdown](#get-a-facet-breakdown)
+  - [Discover filter parameters](#discover-filter-parameters)
+  - [Search with field filters](#search-with-field-filters)
+  - [Look up files in an analysis set](#look-up-files-in-an-analysis-set)
+  - [Drill into individual files](#drill-into-individual-files)
+  - [Explore the samples](#explore-the-samples)
+  - [Download and preview a file](#download-and-preview-a-file)
+- [Setup](#setup)
+  - [Requirements](#requirements)
+  - [Run](#run)
+  - [Connect to an AI coding agent](#connect-to-an-ai-coding-agent)
+  - [Environment variables](#environment-variables)
+- [Tool Reference](#tool-reference)
+  - [Primary Tools](#primary-tools)
+  - [Supporting Tools](#supporting-tools)
+  - [`igvf_portal_search`](#igvf_portal_search)
+  - [`igvf_portal_get_by_id`](#igvf_portal_get_by_id)
+  - [`igvf_portal_get_schema`](#igvf_portal_get_schema)
+  - [`igvf_portal_list_item_types`](#igvf_portal_list_item_types)
+  - [`igvf_portal_get_collection`](#igvf_portal_get_collection)
+  - [`igvf_portal_get_endpoint_params`](#igvf_portal_get_endpoint_params)
+  - [`igvf_portal_download`](#igvf_portal_download)
+  - [`igvf_portal_batch_download`](#igvf_portal_batch_download)
+  - [`igvf_portal_facets`](#igvf_portal_facets)
+  - [`igvf_portal_report`](#igvf_portal_report)
+- [Agent Skill: `igvf-facet-filter`](#agent-skill-igvf-facet-filter)
+
 ## Examples (using Claude Code)
 
 ### List all item types
