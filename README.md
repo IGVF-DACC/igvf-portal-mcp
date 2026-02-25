@@ -212,50 +212,6 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
   10x multiome dominates at 1,470 (29%), followed by SGE (798) and SHARE-seq (519).
 ```
 
-### Search with field filters
-
-```
-❯ Give me an example 10x multiome analysis set
-
-● igvf-portal-mcp - igvf_portal_search (MCP)(type: ["AnalysisSet"], field_filters: {"preferred_assay_titles":"10x multiome"}, limit: "1")
-  ⎿  {
-       "result": "{\n  \"total\": 726,\n  \"returned\": 1,\n  \"results\": [\n    {\n      \"doi\": \"10.65695/IGVFDS9564JXGL\",\n      \"input_file_sets\": [\n        \"/measurement-sets/IGVFDS2443ZQHK/\",\n        \"/measur
-     ement-sets/IGVFDS9885KGYZ/\"\n      ],\n      \"release_timestamp\": \"2025-11-12T18:17:10.823135+00:00\",\n      \"lab\": \"/labs/ryan-corces/\",\n      \"award\": \"/awards/HG012076/\",\n      \"accession\": \"IGVFDS95
-     … +11 lines (ctrl+o to expand)
-
-● Here's an example 10x multiome AnalysisSet:
-
-  IGVFDS9564JXGL — https://data.igvf.org/analysis-sets/IGVFDS9564JXGL/
-
-  ┌───────────────────┬──────────────────────────────────────────────────────────────────────────────────────────┐
-  │       Field       │                                          Value                                           │
-  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
-  │ Type              │ intermediate analysis                                                                    │
-  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
-  │ Status            │ released                                                                                 │
-  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
-  │ Lab               │ Ryan Corces                                                                              │
-  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
-  │ Assays            │ single-nucleus ATAC-seq + single-nucleus RNA-seq (10x multiome, genetically multiplexed) │
-  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
-  │ Sample            │ Homo sapiens multiplexed sample — posterior cingulate gyrus, putamen, substantia nigra   │
-  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
-  │ Donors            │ 8 human donors                                                                           │
-  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
-  │ Pipeline          │ uniform pipeline (completed)                                                             │
-  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
-  │ Controlled access │ No                                                                                       │
-  └───────────────────┴──────────────────────────────────────────────────────────────────────────────────────────┘
-
-  Files (6):
-  - IGVFFI3882BXBL — alignment file
-  - IGVFFI6307SAFZ, IGVFFI9552YLAE — index files
-  - IGVFFI6617CCIB, IGVFFI8348ZDXP — matrix files
-  - IGVFFI0795NBVQ — tabular file
-
-  Input MeasurementSets: IGVFDS2443ZQHK, IGVFDS9885KGYZ
-```
-
 ### Discover filter parameters
 
 ```
@@ -309,6 +265,50 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
 
   Timestamps: creation_timestamp, release_timestamp,
     submitted_files_timestamp, preview_timestamp
+```
+
+### Search with field filters
+
+```
+❯ Give me an example 10x multiome analysis set
+
+● igvf-portal-mcp - igvf_portal_search (MCP)(type: ["AnalysisSet"], field_filters: {"preferred_assay_titles":"10x multiome"}, limit: "1")
+  ⎿  {
+       "result": "{\n  \"total\": 726,\n  \"returned\": 1,\n  \"results\": [\n    {\n      \"doi\": \"10.65695/IGVFDS9564JXGL\",\n      \"input_file_sets\": [\n        \"/measurement-sets/IGVFDS2443ZQHK/\",\n        \"/measur
+     ement-sets/IGVFDS9885KGYZ/\"\n      ],\n      \"release_timestamp\": \"2025-11-12T18:17:10.823135+00:00\",\n      \"lab\": \"/labs/ryan-corces/\",\n      \"award\": \"/awards/HG012076/\",\n      \"accession\": \"IGVFDS95
+     … +11 lines (ctrl+o to expand)
+
+● Here's an example 10x multiome AnalysisSet:
+
+  IGVFDS9564JXGL — https://data.igvf.org/analysis-sets/IGVFDS9564JXGL/
+
+  ┌───────────────────┬──────────────────────────────────────────────────────────────────────────────────────────┐
+  │       Field       │                                          Value                                           │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Type              │ intermediate analysis                                                                    │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Status            │ released                                                                                 │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Lab               │ Ryan Corces                                                                              │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Assays            │ single-nucleus ATAC-seq + single-nucleus RNA-seq (10x multiome, genetically multiplexed) │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Sample            │ Homo sapiens multiplexed sample — posterior cingulate gyrus, putamen, substantia nigra   │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Donors            │ 8 human donors                                                                           │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Pipeline          │ uniform pipeline (completed)                                                             │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Controlled access │ No                                                                                       │
+  └───────────────────┴──────────────────────────────────────────────────────────────────────────────────────────┘
+
+  Files (6):
+  - IGVFFI3882BXBL — alignment file
+  - IGVFFI6307SAFZ, IGVFFI9552YLAE — index files
+  - IGVFFI6617CCIB, IGVFFI8348ZDXP — matrix files
+  - IGVFFI0795NBVQ — tabular file
+
+  Input MeasurementSets: IGVFDS2443ZQHK, IGVFDS9885KGYZ
 ```
 
 ### Look up files in an analysis set
