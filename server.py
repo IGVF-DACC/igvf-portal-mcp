@@ -349,15 +349,18 @@ def igvf_portal_batch_download(
     query: str = "",
     field_filters: dict | None = None,
 ) -> str:
-    """Download a metadata TSV for FileSet items and save it to a file.
+    """Get download URLs for files belonging to matching FileSet items and save them to a file.
 
     Only FileSet types are supported: MeasurementSet, AnalysisSet, AuxiliarySet,
     ConstructLibrarySet, CuratedSet, ModelSet, PredictionSet (and FileSet itself).
 
+    Returns a file containing one download URL per line for all files in the
+    matching FileSets.
+
     Args:
         type: One or more FileSet item types, e.g. ["MeasurementSet"].
-        save_path: Local filesystem path where the TSV will be written,
-                   e.g. "/tmp/metadata.tsv".
+        save_path: Local filesystem path where the URLs will be written,
+                   e.g. "/tmp/urls.txt".
         query: Optional free-text filter.
         field_filters: Dict of field→value filters using real dotted field names,
                        e.g. {"file_set.@id": "/analysis-sets/IGVFDS3909HJKS/"}.

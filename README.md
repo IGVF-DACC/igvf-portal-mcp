@@ -594,7 +594,7 @@ All tools are prefixed `igvf_portal_`.
 | [`igvf_portal_get_collection`](#igvf_portal_get_collection) | List items from a collection endpoint |
 | [`igvf_portal_download`](#igvf_portal_download) | Download a single file to a local path |
 | [`igvf_portal_report`](#igvf_portal_report) | Generate a TSV report for an item type |
-| [`igvf_portal_batch_download`](#igvf_portal_batch_download) | Get download URLs for files matching a query |
+| [`igvf_portal_batch_download`](#igvf_portal_batch_download) | Get download URLs for files in matching file sets |
 
 ### Supporting Tools
 
@@ -754,21 +754,24 @@ igvf_portal_download("IGVFFI8092FZKL", "/tmp/IGVFFI8092FZKL.tsv")
 
 ### `igvf_portal_batch_download`
 
-Get a newline-separated list of download URLs for files matching a query.
+Get download URLs for files belonging to matching FileSet items and save them to a local file. Only FileSet types are supported: `MeasurementSet`, `AnalysisSet`, `AuxiliarySet`, `ConstructLibrarySet`, `CuratedSet`, `ModelSet`, `PredictionSet` (and `FileSet` itself).
 
 ```python
 igvf_portal_batch_download(
     type: list[str],
+    save_path: str,
     query: str = "",
     field_filters: dict | None = None,
-) -> str  # newline-separated URLs
+) -> str  # JSON
 ```
 
 ```python
 igvf_portal_batch_download(
-    type=["SequenceFile"],
-    field_filters={"file_set.@id": "/measurement-sets/IGVFDS1234ABCD/"}
+    type=["MeasurementSet"],
+    save_path="/tmp/metadata.tsv",
+    field_filters={"lab.@id": "/labs/ali-mortazavi/"}
 )
+# → {"saved_to": "/tmp/metadata.tsv", "bytes": 204800}
 ```
 
 ---
