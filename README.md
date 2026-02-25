@@ -839,3 +839,113 @@ Or without an argument to be prompted for the item type.
 3. User picks a filter value. The skill re-queries with `field_filters` applied and shows the updated count and facet menu.
 4. Steps 2–3 repeat until the user is ready to fetch records.
 5. Fetches results with `igvf_portal_search` or `igvf_portal_get_collection`.
+
+### Example session
+
+```
+❯ /igvf-facet-filter SequenceFile
+
+● igvf-portal-mcp - igvf_portal_facets (MCP)(type: ["SequenceFile"])
+  ⎿  {"result":"{\n  \"total\": 49945,\n  \"facets\": [...]\n  ...
+     … +145 lines (ctrl+o to expand)
+
+● Total SequenceFiles: 49,945
+
+  Available facets (skipping single-value):
+  Content Type, File Format, Illumina Read Type, Sequencing Kit,
+  Sequencing Platform, Controlled Access, Data Use Limitation,
+  File Set Type, Assay Term Names, Preferred Assay Titles, Taxa,
+  Sample, Classification, Cellular Transformation Target, Disease,
+  Modification, Treatment, Lab, Award
+
+  Which facet(s) would you like to explore or filter on?
+
+❯ file format
+
+● From the data already fetched:
+
+  fastq   47,981
+  pod5     1,964
+
+  Would you like to filter on one of these, explore another facet, or fetch results?
+
+❯ sample
+
+● From the data already fetched:
+
+  putamen                            11,408
+  posterior cingulate gyrus          11,292
+  substantia nigra                   11,002
+  middle temporal gyrus              10,768
+  THP-1                               8,383
+  cerebellar cortex                   8,348
+  induced pluripotent stem cell       4,810
+  Jurkat                              3,258
+  peripheral blood mononuclear cell   3,213
+  kidney                                758
+  … +47 more
+
+  Would you like to filter on a sample, explore another facet, or fetch results?
+
+❯ Filter on fastq and kidney
+
+● igvf-portal-mcp - igvf_portal_facets (MCP)(type: ["SequenceFile"],
+                    field_filters: {"file_format":"fastq","file_set.samples.sample_terms.term_name":"kidney"})
+  ⎿  {"result":"{\n  \"total\": 758, ...
+     … +50 lines (ctrl+o to expand)
+
+● 758 SequenceFiles match fastq + kidney. Mostly homogeneous:
+  - Assay: single-nucleus RNA sequencing assay (Parse SPLiT-seq)
+  - Taxa: Mus musculus / Lab: Ali Mortazavi, UCI
+
+  Remaining multi-value facets:
+  - Sequencing Kit:  NovaSeq 6000 S4 (480), NovaSeq X 25B (240), NextSeq P3 (28), NextSeq P4 (10)
+  - Sequencing Platform: NovaSeq 6000 (480), NovaSeq X (240), NextSeq 2000 (38)
+  - Classification: multiplexed sample (758), tissue/organ (758), primary cell (16)
+
+  Would you like to filter further, or fetch the 758 results?
+
+❯ filter on primary cell
+
+● igvf-portal-mcp - igvf_portal_facets (MCP)(type: ["SequenceFile"],
+                    field_filters: {"file_format":"fastq","file_set.samples.sample_terms.term_name":"kidney",
+                                    "file_set.samples.classifications":"primary cell"})
+  ⎿  {"result":"{\n  \"total\": 16, ...
+     … +33 lines (ctrl+o to expand)
+
+● 16 SequenceFiles match. Fully homogeneous — all single-value across every facet:
+  - Format: fastq (reads) / Assay: Parse SPLiT-seq / Taxa: Mus musculus
+  - Platform: Illumina NextSeq 2000 / Lab: Ali Mortazavi, UCI
+  - Read types: R1 × 8, R2 × 8 / Controlled access: No
+
+  Ready to fetch all 16 results?
+
+❯ Download report and show me preview of first five rows
+
+● igvf-portal-mcp - igvf_portal_report (MCP)(type: ["SequenceFile"],
+                    save_path: "/tmp/sequence_files_kidney_primary.tsv",
+                    field_filters: {"file_format":"fastq",
+                                    "file_set.samples.sample_terms.term_name":"kidney",
+                                    "file_set.samples.classifications":"primary cell"})
+  ⎿  {"result":"{\n  \"saved_to\": \"/tmp/sequence_files_kidney_primary.tsv\",\n  \"bytes\": 3624\n}"}
+
+● Report saved to /tmp/sequence_files_kidney_primary.tsv (3.6 KB). First 5 rows:
+
+  ┌────────────────┬───────────┬────────────────┬──────────┐
+  │   Accession    │ Read Type │    File Set    │  Status  │
+  ├────────────────┼───────────┼────────────────┼──────────┤
+  │ IGVFFI5210WGXF │ R1        │ IGVFDS1479KDWW │ released │
+  ├────────────────┼───────────┼────────────────┼──────────┤
+  │ IGVFFI7223DHDE │ R2        │ IGVFDS9176CSYH │ released │
+  ├────────────────┼───────────┼────────────────┼──────────┤
+  │ IGVFFI4385HOXT │ R2        │ IGVFDS1479KDWW │ released │
+  ├────────────────┼───────────┼────────────────┼──────────┤
+  │ IGVFFI2085FMMU │ R2        │ IGVFDS9176CSYH │ released │
+  ├────────────────┼───────────┼────────────────┼──────────┤
+  │ IGVFFI2033IHBM │ R1        │ IGVFDS9604WYAS │ released │
+  └────────────────┴───────────┴────────────────┴──────────┘
+
+  All 16 are fastq reads from Ali Mortazavi (UCI), released and validated,
+  across 3 MeasurementSets (IGVFDS1479KDWW, IGVFDS9176CSYH, IGVFDS9604WYAS)
+  with R1/R2 pairs for each.
+```
