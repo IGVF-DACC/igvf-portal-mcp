@@ -330,29 +330,55 @@ def igvf_portal_download(file_id: str, save_path: str) -> str:
     return json.dumps({"saved_to": save_path, "bytes": len(data)}, indent=2)
 
 
+METADATA_ALLOWED_TYPES = [
+    "FileSet",
+    "MeasurementSet",
+    "AnalysisSet",
+    "AuxiliarySet",
+    "ConstructLibrarySet",
+    "CuratedSet",
+    "ModelSet",
+    "PredictionSet",
+]
+
+
 @mcp.tool()
 def igvf_portal_batch_download(
     type: list[str],
+    save_path: str,
     query: str = "",
     field_filters: dict | None = None,
 ) -> str:
-    """List files to download based on a search query. All results are returned.
+    """Download a metadata TSV for FileSet items and save it to a file.
 
-    Returns a newline-separated list of download URLs matching the query.
+    Only FileSet types are supported: MeasurementSet, AnalysisSet, AuxiliarySet,
+    ConstructLibrarySet, CuratedSet, ModelSet, PredictionSet (and FileSet itself).
 
     Args:
-        type: One or more item types to filter by, e.g. ["SequenceFile"].
+        type: One or more FileSet item types, e.g. ["MeasurementSet"].
+        save_path: Local filesystem path where the TSV will be written,
+                   e.g. "/tmp/metadata.tsv".
         query: Optional free-text filter.
         field_filters: Dict of field→value filters using real dotted field names,
                        e.g. {"file_set.@id": "/analysis-sets/IGVFDS3909HJKS/"}.
     """
+    invalid = [t for t in type if t not in METADATA_ALLOWED_TYPES]
+    if invalid:
+        return json.dumps({
+            "error": f"Type(s) not allowed for batch download: {invalid}",
+            "allowed_types": METADATA_ALLOWED_TYPES,
+        }, indent=2)
+
     api = _api()
     result = api.batch_download(
         type=type,
         query=query or None,
         field_filters=field_filters,
     )
-    return result if isinstance(result, str) else str(result)
+    content = result if isinstance(result, bytes) else str(result).encode("utf-8")
+    with open(save_path, "wb") as f:
+        f.write(content)
+    return json.dumps({"saved_to": save_path, "bytes": len(content)}, indent=2)
 
 
 @mcp.tool()
