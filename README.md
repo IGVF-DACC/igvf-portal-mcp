@@ -47,6 +47,29 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
   EP300-interacting inhibitor of differentiation (EID) family members.
 ```
 
+### Look up an assay term
+
+```
+❯ What is assay term OBI:0002762?
+
+● igvf-portal-mcp - igvf_portal_search (MCP)(query: "OBI:0002762", type: ["AssayTerm"])
+  ⎿  {
+       "result": "{\"total\": 1, \"returned\": 1, \"results\": [{\"preferred_assay_titles\": [\"SHARE-seq\",
+         \"10x multiome\", \"10x multiome with MULTI-seq\", \"miDOGMA-seq\", \"scMultiome-NT-seq\",
+         \"10x snATAC-seq with Scale pre-indexing\"], \"term_id\": \"OBI:0002762\",
+         \"term_name\": \"single-nucleus ATAC-seq\", ...
+     … +10 lines (ctrl+o to expand)
+
+● OBI:0002762 is single-nucleus ATAC-seq (snATAC-seq).
+
+  - Definition: An ATAC-seq assay in which single nuclei are isolated from frozen tissue samples,
+    through a protocol designed to maximally preserve nucleus integrity during sample processing
+    and optimize transposase-mediated fragmentation of chromatin in individual nuclei.
+  - Assay slim: chromatin accessibility
+  - Preferred assay titles on IGVF: SHARE-seq, 10x multiome, 10x multiome with MULTI-seq,
+    miDOGMA-seq, scMultiome-NT-seq, 10x snATAC-seq with Scale pre-indexing
+```
+
 ### Look up files in an analysis set
 
 ```
@@ -151,6 +174,79 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
   7 of 8 donors have Parkinson's disease; 2 also have cerebral amyloid angiopathy. Ages
   range from 70–85. The one donor without a listed disease (IGVFSM7450JGGC) likely
   serves as a control.
+```
+
+### Download and preview a file
+
+```
+❯ Download IGVFFI7253BTIQ and give me a preview
+
+● Let me first get info on this file, then download it.
+
+● igvf-portal-mcp - igvf_portal_get_by_id (MCP)(resource_id: "IGVFFI7253BTIQ")
+  ⎿  {
+       "result": "{\"controlled_access\": false, \"assembly\": \"GRCh38\", \"transcriptome_annotation\": \"GENCODE 43\",
+         \"filtered\": true, \"accession\": \"IGVFFI7253BTIQ\", \"status\": \"released\", \"file_format\": \"tsv\",
+         \"file_size\": 50518, \"content_type\": \"differential gene expression quantifications\", ...
+     … +10 lines (ctrl+o to expand)
+
+● It's a TSV file (~50 KB). Downloading now.
+
+● igvf-portal-mcp - igvf_portal_download (MCP)(file_id: "IGVFFI7253BTIQ", save_path: "/tmp/IGVFFI7253BTIQ.tsv.gz")
+  ⎿  {"saved_to": "/tmp/IGVFFI7253BTIQ.tsv.gz", "bytes": 50518}
+
+● Here's a preview of IGVFFI7253BTIQ:
+
+  File: differential gene expression quantifications (TSV, GRCh38 GENCODE 43, Parse Perturb-seq)
+  Description: Analysis results for direct targeting (filtered)
+  Rows: 969 data rows + 1 header
+
+  Columns:
+
+  ┌─────────────────────────┬─────────────────────────────────────────┐
+  │         Column          │               Description               │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ intended_target_name    │ CRISPR target gene name                 │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ guide_id(s)             │ Guide RNA identifiers (comma-separated) │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ targeting_chr/start/end │ Genomic coordinates of the target       │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ gene_id                 │ Ensembl gene ID (the tested gene)       │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ gene_symbol             │ Gene symbol                             │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ sceptre_log2_fc         │ Log2 fold change (SCEPTRE method)       │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ sceptre_p_value         │ Raw p-value                             │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ sceptre_adj_p_value     │ Adjusted p-value                        │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ significant             │ TRUE/FALSE significance call            │
+  ├─────────────────────────┼─────────────────────────────────────────┤
+  │ type                    │ Direct_Targeting for all rows           │
+  └─────────────────────────┴─────────────────────────────────────────┘
+
+  Sample rows:
+
+  ┌─────────────────┬────────┬─────────┬──────────┬─────────────┐
+  │ intended_target │  gene  │ log2_fc │  adj_p   │ significant │
+  ├─────────────────┼────────┼─────────┼──────────┼─────────────┤
+  │ BAD             │ BAD    │ 0       │ 1        │ FALSE       │
+  ├─────────────────┼────────┼─────────┼──────────┼─────────────┤
+  │ TFPI            │ TFPI   │ -0.876  │ 1.52e-9  │ TRUE        │
+  ├─────────────────┼────────┼─────────┼──────────┼─────────────┤
+  │ SLC7A2          │ SLC7A2 │ -1.927  │ 1.57e-18 │ TRUE        │
+  ├─────────────────┼────────┼─────────┼──────────┼─────────────┤
+  │ HSPB6           │ HSPB6  │ -2.223  │ 1.06e-6  │ TRUE        │
+  ├─────────────────┼────────┼─────────┼──────────┼─────────────┤
+  │ CSDE1           │ CSDE1  │ -2.317  │ 5.60e-34 │ TRUE        │
+  ├─────────────────┼────────┼─────────┼──────────┼─────────────┤
+  │ MGST1           │ MGST1  │ -2.333  │ 1.98e-21 │ TRUE        │
+  └─────────────────┴────────┴─────────┴──────────┴─────────────┘
+
+  Most perturbations show negative log2 FC (gene knockdown via CRISPRi/dCas9-KRAB),
+  with SCEPTRE used for differential expression testing.
 ```
 
 ---
