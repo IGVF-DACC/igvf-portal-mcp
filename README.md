@@ -6,6 +6,47 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
 
 ## Examples (using Claude Code)
 
+### List all item types
+
+```
+❯ What types exist on the IGVF portal?
+
+● igvf-portal-mcp - igvf_portal_list_item_types (MCP)
+  ⎿  {
+       "result": "[\n  \"AccessKey\",\n  \"AlignmentFile\",\n  \"AnalysisSet\",\n  \"AnalysisStep\",\n  \"AnalysisStepVersion\",\n  \"AssayTerm\",\n  \"AuxiliarySet\",\n  \"Award\",\n  \"Biomarker\",\n  \"ConfigurationFile\",
+     \n  \"ConstructLibrarySet\",\n  \"CrisprModification\",\n  \"CuratedSet\",\n  \"DegronModification\",\n  \"Document\",\n  \"Gene\",\n  \"HumanDonor\",\n  \"Image\",\n  \"ImageFile\",\n  \"InVitroSystem\",\n  \"IndexFile\
+     … +5 lines (ctrl+o to expand)
+
+● The IGVF portal has 57 item types:
+
+  Files
+  - AlignmentFile, ConfigurationFile, ImageFile, IndexFile, MatrixFile, ModelFile, ReferenceFile, SequenceFile, SignalFile, TabularFile
+
+  Sets / Collections
+  - AnalysisSet, AuxiliarySet, ConstructLibrarySet, CuratedSet, ModelSet, MeasurementSet, PredictionSet
+
+  Samples / Biospecimens
+  - InVitroSystem, MultiplexedSample, PrimaryCell, TechnicalSample, Tissue, WholeOrganism
+
+  Donors
+  - HumanDonor, RodentDonor
+
+  Genomics / Biology
+  - Gene, OpenReadingFrame, Biomarker, CrisprModification, DegronModification
+
+  Terms / Ontologies
+  - AssayTerm, PhenotypeTerm, PlatformTerm, SampleTerm, PhenotypicFeature
+
+  Quality Metrics
+  - MpraQualityMetric, PerturbSeqQualityMetric, SingleCellAtacSeqQualityMetric, SingleCellRnaSeqQualityMetric, StarrSeqQualityMetric
+
+  Analysis / Workflows
+  - AnalysisStep, AnalysisStepVersion, Software, SoftwareVersion, Workflow
+
+  Administrative / Metadata
+  - AccessKey, Award, Document, Image, InstitutionalCertificate, Lab, Page, Publication, Source, Treatment, User
+```
+
 ### Search for genes by name
 
 ```
@@ -68,6 +109,206 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
   - Assay slim: chromatin accessibility
   - Preferred assay titles on IGVF: SHARE-seq, 10x multiome, 10x multiome with MULTI-seq,
     miDOGMA-seq, scMultiome-NT-seq, 10x snATAC-seq with Scale pre-indexing
+```
+
+### Get a facet breakdown
+
+```
+❯ Give me a breakdown of measurement sets by preferred assay title
+
+● igvf-portal-mcp - igvf_portal_facets (MCP)(type: ["MeasurementSet"])
+  ⎿  Error: result (120,385 characters) exceeds maximum allowed tokens. Output has been saved to ...
+     Format: JSON with schema: {result: string}
+     … +6 lines (ctrl+o to expand)
+
+● Bash(cat .../tool-results/mcp-igvf-portal-mcp-igvf_portal_facets-....txt | python3 -c "...")
+  ⎿  Total MeasurementSets: 5129
+
+       1470  10x multiome
+     … +39 lines (ctrl+o to expand)
+
+● MeasurementSets by preferred assay title (total: 5,129):
+
+  ┌───────┬───────────────────────────────────┐
+  │ Count │       Preferred Assay Title       │
+  ├───────┼───────────────────────────────────┤
+  │ 1,470 │ 10x multiome                      │
+  ├───────┼───────────────────────────────────┤
+  │   798 │ SGE                               │
+  ├───────┼───────────────────────────────────┤
+  │   519 │ SHARE-seq                         │
+  ├───────┼───────────────────────────────────┤
+  │   488 │ Variant-EFFECTS                   │
+  ├───────┼───────────────────────────────────┤
+  │   333 │ Parse SPLiT-seq                   │
+  ├───────┼───────────────────────────────────┤
+  │   268 │ CRISPR FlowFISH screen            │
+  ├───────┼───────────────────────────────────┤
+  │   196 │ Perturb-seq                       │
+  ├───────┼───────────────────────────────────┤
+  │   144 │ VAMP-seq (MultiSTEP)              │
+  ├───────┼───────────────────────────────────┤
+  │   118 │ 10x multiome with MULTI-seq       │
+  ├───────┼───────────────────────────────────┤
+  │   108 │ CRISPR FACS screen                │
+  ├───────┼───────────────────────────────────┤
+  │    95 │ RNA-seq                           │
+  ├───────┼───────────────────────────────────┤
+  │    76 │ mtscMultiome                      │
+  ├───────┼───────────────────────────────────┤
+  │    54 │ MPRA                              │
+  ├───────┼───────────────────────────────────┤
+  │    48 │ TAP-seq                           │
+  ├───────┼───────────────────────────────────┤
+  │    48 │ scNT-seq2                         │
+  ├───────┼───────────────────────────────────┤
+  │    41 │ ATAC-seq                          │
+  ├───────┼───────────────────────────────────┤
+  │    40 │ Proliferation CRISPR screen       │
+  ├───────┼───────────────────────────────────┤
+  │    36 │ VAMP-seq                          │
+  ├───────┼───────────────────────────────────┤
+  │    36 │ snM3C-seq                         │
+  ├───────┼───────────────────────────────────┤
+  │    34 │ snMCT-seq                         │
+  ├───────┼───────────────────────────────────┤
+  │    27 │ lentiMPRA                         │
+  ├───────┼───────────────────────────────────┤
+  │    23 │ WGS                               │
+  ├───────┼───────────────────────────────────┤
+  │    20 │ HiCAR                             │
+  ├───────┼───────────────────────────────────┤
+  │    19 │ Parse Perturb-seq                 │
+  ├───────┼───────────────────────────────────┤
+  │    15 │ STARR-seq                         │
+  ├───────┼───────────────────────────────────┤
+  │     8 │ ONT Fiber-seq                     │
+  ├───────┼───────────────────────────────────┤
+  │     8 │ ONT dRNA                          │
+  ├───────┼───────────────────────────────────┤
+  │     8 │ ONT direct WGS                    │
+  ├───────┼───────────────────────────────────┤
+  │     8 │ scCRISPR screen                   │
+  ├───────┼───────────────────────────────────┤
+  │     6 │ MPRA (scQer)                      │
+  ├───────┼───────────────────────────────────┤
+  │     6 │ Migration CRISPR screen           │
+  ├───────┼───────────────────────────────────┤
+  │     6 │ electroporated MPRA               │
+  ├───────┼───────────────────────────────────┤
+  │     4 │ Arrayed semi-qY2H v1/v2/v3        │
+  ├───────┼───────────────────────────────────┤
+  │     4 │ scATAC-seq                        │
+  ├───────┼───────────────────────────────────┤
+  │     4 │ scNT-seq                          │
+  ├───────┼───────────────────────────────────┤
+  │     3 │ scRNA-seq                         │
+  ├───────┼───────────────────────────────────┤
+  │     1 │ DUAL-IPA                          │
+  ├───────┼───────────────────────────────────┤
+  │     1 │ Variant painting via fluorescence │
+  └───────┴───────────────────────────────────┘
+
+  10x multiome dominates at 1,470 (29%), followed by SGE (798) and SHARE-seq (519).
+```
+
+### Search with field filters
+
+```
+❯ Give me an example 10x multiome analysis set
+
+● igvf-portal-mcp - igvf_portal_search (MCP)(type: ["AnalysisSet"], field_filters: {"preferred_assay_titles":"10x multiome"}, limit: "1")
+  ⎿  {
+       "result": "{\n  \"total\": 726,\n  \"returned\": 1,\n  \"results\": [\n    {\n      \"doi\": \"10.65695/IGVFDS9564JXGL\",\n      \"input_file_sets\": [\n        \"/measurement-sets/IGVFDS2443ZQHK/\",\n        \"/measur
+     ement-sets/IGVFDS9885KGYZ/\"\n      ],\n      \"release_timestamp\": \"2025-11-12T18:17:10.823135+00:00\",\n      \"lab\": \"/labs/ryan-corces/\",\n      \"award\": \"/awards/HG012076/\",\n      \"accession\": \"IGVFDS95
+     … +11 lines (ctrl+o to expand)
+
+● Here's an example 10x multiome AnalysisSet:
+
+  IGVFDS9564JXGL — https://data.igvf.org/analysis-sets/IGVFDS9564JXGL/
+
+  ┌───────────────────┬──────────────────────────────────────────────────────────────────────────────────────────┐
+  │       Field       │                                          Value                                           │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Type              │ intermediate analysis                                                                    │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Status            │ released                                                                                 │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Lab               │ Ryan Corces                                                                              │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Assays            │ single-nucleus ATAC-seq + single-nucleus RNA-seq (10x multiome, genetically multiplexed) │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Sample            │ Homo sapiens multiplexed sample — posterior cingulate gyrus, putamen, substantia nigra   │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Donors            │ 8 human donors                                                                           │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Pipeline          │ uniform pipeline (completed)                                                             │
+  ├───────────────────┼──────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Controlled access │ No                                                                                       │
+  └───────────────────┴──────────────────────────────────────────────────────────────────────────────────────────┘
+
+  Files (6):
+  - IGVFFI3882BXBL — alignment file
+  - IGVFFI6307SAFZ, IGVFFI9552YLAE — index files
+  - IGVFFI6617CCIB, IGVFFI8348ZDXP — matrix files
+  - IGVFFI0795NBVQ — tabular file
+
+  Input MeasurementSets: IGVFDS2443ZQHK, IGVFDS9885KGYZ
+```
+
+### Discover filter parameters
+
+```
+❯ What can I filter on for analysis sets?
+
+● igvf-portal-mcp - igvf_portal_get_endpoint_params (MCP)(endpoint: "analysis_sets")
+  ⎿  {"result":"{\n  \"endpoint\": \"analysis_sets\",\n  \"standard_params\": [\n    \"limit\",\n    \"query\",\n    \"sort\"\n  ],\n  \"filter_params\": [\n    {\n      \"collection_param\": \"id\",\n      \"search_field\":
+     \"@id\",\n      \"type\": \"list[str]\"\n    },\n    {\n      \"collection_param\": \"accession\",\n      \"search_field\": \"accession\",\n      \"type\": \"list[str]\"\n    },\n    {\n      \"collection_param\": \"alia
+     ses\",\n      \"search_field\": \"aliases\",\n      \"type\": \"list[str]\"\n    },\n    {\n      \"collection_param\": \"alternate_accessions\",\n      \"search_field\": \"alternate_accessions\",\n      \"type\": \"list
+     … +119 lines (ctrl+o to expand)
+
+● Here are all filterable fields for AnalysisSet, grouped by category:
+
+  Identity: @id, accession, uuid, aliases, alternate_accessions, doi, status,
+    controlled_access, data_use_limitation_summaries, is_on_anvil
+
+  Assay: assay_titles, preferred_assay_titles, file_set_type,
+    uniform_pipeline_status, enrichment_designs,
+    functional_assay_mechanisms.term_name
+
+  Samples: samples.@id, samples.accession, samples.summary, sample_summary,
+    samples.classifications, samples.taxa, samples.sample_terms.term_name,
+    samples.disease_terms.term_name, samples.targeted_sample_term.term_name,
+    samples.modifications.modality, samples.treatments.treatment_term_name,
+    samples.treatments.treatment_type, samples.treatments.purpose,
+    samples.growth_medium, samples.cellular_sub_pool,
+    samples.institutional_certificates.data_use_limitation
+
+  Donors: donors.@id, donors.accession, donors.taxa, donors.sex,
+    donors.strain_background
+
+  Files: files.@id, files.accession, files.content_type, files.file_format,
+    files.file_format_type, files.assembly, files.transcriptome_annotation,
+    files.file_size, files.status, files.upload_status,
+    files.controlled_access, files.sequencing_platform.term_name,
+    files.cell_type_annotation.term_name
+
+  Input / linked sets: input_file_sets.@id, input_file_sets.accession,
+    input_file_sets.file_set_type, input_for, construct_library_sets.@id,
+    construct_library_sets.file_set_type,
+    construct_library_sets.selection_criteria,
+    construct_library_sets.small_scale_gene_list.symbol,
+    construct_library_sets.associated_phenotypes.term_name,
+    targeted_genes.symbol, demultiplexed_samples
+
+  Workflows / pipeline: workflows.@id, workflows.accession, workflows.name,
+    workflows.uniform_pipeline, workflows.workflow_version, pipeline_parameters
+
+  Lab / award: lab.@id, lab.title, award.@id, award.component, award.title,
+    award.contact_pi.title, publications.publication_identifiers
+
+  Timestamps: creation_timestamp, release_timestamp,
+    submitted_files_timestamp, preview_timestamp
 ```
 
 ### Look up files in an analysis set
