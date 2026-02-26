@@ -36,7 +36,7 @@ The server is built on top of the [IGVF Python client](https://github.com/IGVF-D
   - [`igvf_portal_batch_download`](#igvf_portal_batch_download)
   - [`igvf_portal_facets`](#igvf_portal_facets)
   - [`igvf_portal_report`](#igvf_portal_report)
-- [Agent Skill: `igvf-facet-filter`](#agent-skill-igvf-facet-filter)
+- [Agent Skill: `igvf-portal-facet-filter`](#agent-skill-igvf-portal-facet-filter)
 
 ## Examples (using Claude Code)
 
@@ -853,9 +853,9 @@ igvf_portal_report(
 
 ---
 
-## Agent Skill: `igvf-facet-filter`
+## Agent Skill: `igvf-portal-facet-filter`
 
-This repo includes an agent skill for guided faceted exploration. It is currently implemented as a Claude Code skill (`.claude/skills/igvf-facet-filter/SKILL.md`) but the workflow it describes can be adapted for any coding agent.
+This repo includes an agent skill for guided faceted exploration. It is currently implemented as a Claude Code skill (`.claude/skills/igvf-portal-facet-filter/SKILL.md`) but the workflow it describes can be adapted for any coding agent.
 
 ### Purpose
 
@@ -864,7 +864,7 @@ Guides the user through progressive filtering of an IGVF item type — starting 
 ### Usage (Claude Code)
 
 ```
-/igvf-facet-filter SequenceFile
+/igvf-portal-facet-filter SequenceFile
 ```
 
 Or without an argument to be prompted for the item type.
@@ -880,7 +880,7 @@ Or without an argument to be prompted for the item type.
 ### Example session
 
 ```
-❯ /igvf-facet-filter SequenceFile
+❯ /igvf-portal-facet-filter SequenceFile
 
 ● igvf-portal-mcp - igvf_portal_facets (MCP)(type: ["SequenceFile"])
   ⎿  {"result":"{\n  \"total\": 49945,\n  \"facets\": [...]\n  ...

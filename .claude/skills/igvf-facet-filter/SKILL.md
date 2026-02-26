@@ -1,5 +1,5 @@
 ---
-name: igvf-facet-filter
+name: igvf-portal-facet-filter
 description: Summarize an IGVF item type by facets and guide the user through progressive filtering
 argument-hint: <ItemType>
 ---
