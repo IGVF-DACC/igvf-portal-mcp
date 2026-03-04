@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
@@ -39,27 +38,6 @@ jobs:
           sed -i "s/igvf-client==${CURRENT}/igvf-client==${LATEST}/g" requirements.txt
           sed -i "s/igvf-client==${CURRENT}/igvf-client==${LATEST}/g" server.py
           echo "$LATEST" > VERSION
-
-      - name: Create pull request
-        id: create-pr
-        if: steps.pypi.outputs.version != steps.current.outputs.version
-        uses: peter-evans/create-pull-request@v7
-        with:
-          commit-message: "update igvf-client to ${{ steps.pypi.outputs.version }}"
-          title: "update igvf-client to ${{ steps.pypi.outputs.version }}"
-          body: |
-            Automated dependency update: `igvf-client` `${{ steps.current.outputs.version }}` → `${{ steps.pypi.outputs.version }}`.
-
-            MCP server version updated to match.
-
-            See https://pypi.org/project/igvf-client/${{ steps.pypi.outputs.version }}/
-          branch: "update-igvf-client-${{ steps.pypi.outputs.version }}"
-          delete-branch: true
-          author: Keenan Graham <keenangraham@stanford.edu>
-          committer: Keenan Graham <keenangraham@stanford.edu>
-
-      - name: Enable auto-merge
-        if: steps.create-pr.outputs.pull-request-number != ''
-        run: gh pr merge --auto --squash "${{ steps.create-pr.outputs.pull-request-number }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git add requirements.txt server.py VERSION
+          git commit -m "update igvf-client to $LATEST"
+          git push origin main
