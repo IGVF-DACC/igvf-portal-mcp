@@ -2,7 +2,7 @@ name: Update igvf-client
 
 on:
   schedule:
-    - cron: '0 8 * * 1'  # Every Monday at 08:00 UTC
+    - cron: '0 8 * * 5'  # Every Friday at 08:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -25,6 +25,11 @@ jobs:
         run: |
           CURRENT=$(grep '^igvf-client==' requirements.txt | cut -d'=' -f3)
           echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
+
+      - name: Set git user identity
+        run: |
+          git config --global user.email "keenangraham@stanford.edu"
+          git config --global user.name "Keenan Graham"
 
       - name: Update pinned igvf-client version in all files
         if: steps.pypi.outputs.version != steps.current.outputs.version
