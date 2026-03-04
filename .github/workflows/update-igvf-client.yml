@@ -11,7 +11,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      workflows: write
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +38,6 @@ jobs:
           CURRENT="${{ steps.current.outputs.version }}"
           sed -i "s/igvf-client==${CURRENT}/igvf-client==${LATEST}/g" requirements.txt
           sed -i "s/igvf-client==${CURRENT}/igvf-client==${LATEST}/g" server.py
-          sed -i "s/igvf-client==${CURRENT}/igvf-client==${LATEST}/g" .github/workflows/test.yml
           echo "$LATEST" > VERSION
 
       - name: Create pull request
