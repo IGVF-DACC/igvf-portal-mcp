@@ -215,7 +215,7 @@ def igvf_portal_list_item_types() -> str:
 def igvf_portal_get_collection(
     collection: str,
     query: str = "",
-    limit: int = 25,
+    limit: int | str = 25,
     sort: list[str] | None = None,
     field_filters: dict | None = None,
 ) -> str:
@@ -228,7 +228,7 @@ def igvf_portal_get_collection(
         collection: Snake-case collection name, e.g. "sequence_files",
                     "measurement_sets", "genes", "tissues".
         query: Optional free-text filter.
-        limit: Max results (default 25).
+        limit: Max results (default 25). Pass "all" for every result.
         sort: Sort fields, e.g. ["-creation_timestamp"].
         field_filters: Dict of underscore Python parameter names→value filters.
                        Use igvf_portal_get_endpoint_params to see valid filter fields.
