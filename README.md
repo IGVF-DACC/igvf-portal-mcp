@@ -730,13 +730,13 @@ List items from a specific collection endpoint using underscore-style parameter 
 igvf_portal_get_collection(
     collection: str,
     query: str = "",
-    limit: int = 25,
+    limit: int | str = 25,
     sort: list[str] | None = None,
     field_filters: dict | None = None,
 ) -> str  # JSON
 ```
 
-`field_filters` here uses underscore Python param names (e.g. `"file_set_id"`), not dotted field names. Use `igvf_portal_get_endpoint_params` to discover valid filter names.
+`limit` accepts an integer or `"all"` to return every result. `field_filters` uses underscore Python param names (e.g. `"file_set_id"`), not dotted field names. Use `igvf_portal_get_endpoint_params` to discover valid filter names.
 
 ```python
 igvf_portal_get_collection(
