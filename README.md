@@ -661,14 +661,30 @@ igvf_portal_search(
 | `type` | list[str] | Item types to filter by, e.g. `["SequenceFile"]` |
 | `limit` | int or "all" | Max results (default 25) |
 | `sort` | list[str] | Sort fields; prefix `-` for descending |
-| `field_filters` | dict | Dotted field name → value filters |
+| `field_filters` | dict | Dotted field name → value filters. Values can be a single string or a list (repeated params). Use `!` suffix for negation, `gte:`/`lte:`/`gt:`/`lt:` for ranges. |
 
 Use real dotted field names (e.g. `"file_set.@id"`), not underscore param names. See `igvf_portal_get_endpoint_params` for the distinction.
 
 ```python
+# Single value
+igvf_portal_search(type=["SequenceFile"], field_filters={"file_format": "fastq"})
+
+# Multiple values (OR)
+igvf_portal_search(type=["SequenceFile"], field_filters={"file_format": ["bam", "bed"]})
+
+# Negation
+igvf_portal_search(type=["SequenceFile"], field_filters={"file_format!": "fastq"})
+
+# Range (lower bound)
+igvf_portal_search(type=["SequenceFile"], field_filters={"file_size": "gte:1000000"})
+
+# Range (bounded)
+igvf_portal_search(type=["SequenceFile"], field_filters={"file_size": ["gte:1000000", "lte:5000000"]})
+
+# Combined
 igvf_portal_search(
     type=["SequenceFile"],
-    field_filters={"file_format": "fastq"},
+    field_filters={"file_format": "fastq", "file_set.@id": "/measurement-sets/IGVFDS1234ABCD/"},
     limit=5
 )
 # → {"total": 12340, "returned": 5, "results": [...]}
