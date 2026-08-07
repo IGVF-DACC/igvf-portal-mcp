@@ -1,2 +1,2 @@
-igvf-client==130.0.1
+igvf-client==130.1.0
 mcp[cli]==1.26.0
