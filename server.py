@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#   "igvf-client==138.3.0",
+#   "igvf-client==139.0.1",
 #   "mcp[cli]==1.26.0",
 # ]
 # ///
